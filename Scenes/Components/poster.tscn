@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://dnl6rhsc22t84"]
+
+[sub_resource type="GDScript" id="GDScript_mdaey"]
+script/source = "extends Rectangle
+
+@onready var bottom_right: ColorRect = $BottomRight
+@onready var top_right: ColorRect = $TopRight
+@onready var top_left: ColorRect = $TopLeft
+@onready var bottom_left: ColorRect = $BottomLeft
+
+
+
+
+var texture_rect: TextureRect
+var uri: String
+
+var last_uri: String
+
+
+# adds a texture rect node and also loads the image.
+func add_image(path: String) -> void:
+	uri = \"pkg:/images/\" + path.get_file()
+	if texture_rect:
+		remove_child(texture_rect)
+	var t: TextureRect = TextureRect.new()
+	add_child(t)
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode = TextureRect.STRETCH_SCALE
+	t.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var i: Image =  Image.new()
+	i.load(path)
+	t.texture = ImageTexture.create_from_image(i)
+	texture_rect = t
+	texture_rect.show_behind_parent = true
+	
+func _process(delta: float) -> void:
+	super(delta)
+	if texture_rect:
+		texture_rect.size = self.size
+"
+
+[node name="Poster" type="ReferenceRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+border_color = Color(1, 0.682353, 0, 1)
+border_width = 2.0
+editor_only = false
+script = SubResource("GDScript_mdaey")
+
+[node name="Corners" type="Node2D" parent="."]
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

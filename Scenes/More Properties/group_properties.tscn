@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=3 uid="uid://degg80wf5dlni"]
+
+[sub_resource type="GDScript" id="GDScript_lt4sn"]
+script/source = "extends Control
+
+signal _visiblity_changed
+signal _opacity_changed
+
+@onready var visible_check_box: CheckBox = $Visible/CheckBox
+@onready var opacity_slider: HSlider = $Opacity/HSlider
+@onready var opacity_label: Label = $Opacity/Label
+
+func _set_visible(a: bool) -> void:
+	visible_check_box.button_pressed = a
+
+func _set_opacity(a: float) -> void:
+	opacity_slider.value = a
+	opacity_label.text = str(a)
+
+
+func _on_check_box_toggled(toggled_on: bool) -> void:
+	_visiblity_changed.emit(toggled_on)
+
+
+func _on_h_slider_value_changed(value: float) -> void:
+	_opacity_changed.emit(value)
+	opacity_label.text = str(value)
+"
+
+[node name="GroupProperties" type="Control" groups=["group_properties"]]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -672.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_lt4sn")
+
+[node name="Visible" type="Label" parent="."]
+layout_mode = 0
+offset_top = 61.0
+offset_right = 54.0
+offset_bottom = 84.0
+text = "visible:"
+
+[node name="CheckBox" type="CheckBox" parent="Visible"]
+layout_mode = 0
+offset_left = 57.0
+offset_top = 2.0
+offset_right = 81.0
+offset_bottom = 26.0
+
+[node name="Opacity" type="Label" parent="."]
+layout_mode = 0
+offset_top = 92.0
+offset_right = 61.0
+offset_bottom = 115.0
+text = "opacity:"
+
+[node name="HSlider" type="HSlider" parent="Opacity"]
+layout_mode = 0
+offset_left = 73.0
+offset_top = 5.0
+offset_right = 152.0
+offset_bottom = 21.0
+max_value = 1.0
+step = 0.1
+
+[node name="Label" type="Label" parent="Opacity"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 1.0
+offset_right = 200.0
+offset_bottom = 24.0
+text = "0.5"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 91.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "Group"
+
+[connection signal="toggled" from="Visible/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="value_changed" from="Opacity/HSlider" to="." method="_on_h_slider_value_changed"]

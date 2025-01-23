@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://b1j0dm4385s1x"]
+
+[sub_resource type="GDScript" id="GDScript_1q7jl"]
+script/source = "@tool
+extends PropertyInput
+
+signal empty_filled
+signal filled(val: String)
+
+@onready var line_edit: LineEdit = $EditInput
+
+var min: float
+var max: float
+
+func initialize(min:float, max: float) -> void:
+	self.min = min
+	self.max = max
+	
+func set_value(val: float) -> void:
+	line_edit.placeholder_text = str(val)
+	
+func _on_edit_input_ok_btn_pressed() -> void:
+	if line_edit.text == \"\" && line_edit.placeholder_text == \"\":
+		empty_filled.emit()
+		return
+	if int(line_edit.text) < min || int(line_edit.text) > max:
+		line_edit.text = \"\"
+		return
+		
+	line_edit.placeholder_text = line_edit.text
+	filled.emit(line_edit.text)
+	line_edit.text = \"\"
+	
+	
+"
+
+[node name="EditInput" type="Label"]
+offset_right = 89.0
+offset_bottom = 23.0
+text = ":"
+script = SubResource("GDScript_1q7jl")
+
+[node name="EditInput" type="LineEdit" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -13.5
+offset_right = 115.063
+offset_bottom = 17.5
+grow_horizontal = 0
+grow_vertical = 2
+virtual_keyboard_type = 3
+
+[node name="EditInputOkBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 247.0
+offset_top = -2.0
+offset_right = 277.0
+offset_bottom = 29.0
+text = "Ok"
+
+[connection signal="pressed" from="EditInputOkBtn" to="." method="_on_edit_input_ok_btn_pressed"]

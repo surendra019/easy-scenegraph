@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccu7itjq7nl6j"]
+
+[sub_resource type="GDScript" id="GDScript_hbrba"]
+script/source = "@tool
+extends PropertyInput
+
+signal filled(val: String)
+
+@onready var file_dialog: FileDialog = $FileDialog
+@onready var uri_label: Label = $Label
+
+func set_value(val: String) -> void:
+	uri_label.text = val
+
+func _on_add_btn_pressed() -> void:
+	file_dialog.filters = PackedStringArray([\"*.png\", \"*.jpg\"])
+	file_dialog.show()
+
+
+func _on_file_dialog_file_selected(path: String) -> void:
+	uri_label.text = \"pkg:/images/\" + path.get_file()
+	filled.emit(path)
+	file_dialog.hide()
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oilbv"]
+bg_color = Color(0.241156, 0.241156, 0.241156, 1)
+
+[node name="FileDialogInput" type="Label"]
+offset_right = 64.0
+offset_bottom = 23.0
+text = ":"
+script = SubResource("GDScript_hbrba")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(800, 550)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 154.0
+offset_right = 335.0
+offset_bottom = 23.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_oilbv")
+clip_text = true
+
+[node name="AddBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 345.0
+offset_top = -5.0
+offset_right = 384.0
+offset_bottom = 26.0
+text = "Add"
+
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="AddBtn" to="." method="_on_add_btn_pressed"]

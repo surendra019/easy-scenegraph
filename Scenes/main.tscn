@@ -1,0 +1,703 @@
+[gd_scene load_steps=9 format=3 uid="uid://doonhw3t1ydj1"]
+
+[ext_resource type="Script" path="res://Scripts/main.gd" id="1_beh4v"]
+[ext_resource type="Script" path="res://Scripts/scene.gd" id="2_wtc0l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1ffqg"]
+bg_color = Color(0.223103, 0.223103, 0.223103, 1)
+border_width_top = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1k8j1"]
+bg_color = Color(0.219501, 0.219501, 0.219501, 1)
+border_width_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sn8r3"]
+bg_color = Color(0.10748, 0.10748, 0.10748, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7vrhf"]
+bg_color = Color(0.158472, 0.158472, 0.158472, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j857r"]
+bg_color = Color(0.169245, 0.169245, 0.169245, 1)
+
+[sub_resource type="GDScript" id="GDScript_ksyve"]
+script/source = "extends Panel
+
+@onready var layer_container: HBoxContainer = $ScrollContainer/HBoxContainer
+
+const LAYER_ITEM = preload(\"res://Scenes/Prefabs/layer_item.tscn\")
+
+func add_layer(t: String, ref: Control) -> void:
+	var l : Control = LAYER_ITEM.instantiate()
+	layer_container.add_child(l)
+	l.text = t
+	l.layer_ref = ref
+
+func remove_layer(ref: Control) -> void:
+	for i in layer_container.get_children():
+		if i.layer_ref == ref:
+			layer_container.remove_child(i)
+"
+
+[node name="Main" type="Control" groups=["main"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_beh4v")
+
+[node name="Scene" type="Control" parent="." groups=["scene"]]
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+script = ExtResource("2_wtc0l")
+
+[node name="Panel2" type="Panel" parent="."]
+custom_minimum_size = Vector2(1482, 100)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -102.0
+offset_right = 1482.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1ffqg")
+
+[node name="DeleteButton" type="Button" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = -77.0
+offset_right = 160.0
+offset_bottom = -25.0
+grow_vertical = 0
+text = "delete"
+
+[node name="Position" type="Label" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 182.0
+offset_top = -18.0
+offset_right = 250.0
+offset_bottom = 5.0
+grow_vertical = 2
+text = "position:"
+
+[node name="LineEdit" type="LineEdit" parent="Panel2/Position"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 13.0
+offset_right = 147.063
+offset_bottom = 44.0
+virtual_keyboard_type = 3
+
+[node name="Label" type="Label" parent="Panel2/Position/LineEdit"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -19.5313
+offset_top = -30.0
+offset_right = 20.4688
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "x"
+horizontal_alignment = 1
+
+[node name="LineEdit2" type="LineEdit" parent="Panel2/Position"]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 13.0
+offset_right = 222.063
+offset_bottom = 44.0
+virtual_keyboard_type = 3
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="Panel2/Position/LineEdit2"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -19.5313
+offset_top = -30.0
+offset_right = 20.4688
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "y"
+horizontal_alignment = 1
+
+[node name="Size" type="Label" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 438.0
+offset_top = -17.0
+offset_right = 506.0
+offset_bottom = 6.0
+grow_vertical = 2
+text = "size:"
+
+[node name="Size_x" type="LineEdit" parent="Panel2/Size"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 13.0
+offset_right = 147.063
+offset_bottom = 44.0
+virtual_keyboard_type = 3
+
+[node name="Label" type="Label" parent="Panel2/Size/Size_x"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -19.5313
+offset_top = -30.0
+offset_right = 20.4688
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "x"
+horizontal_alignment = 1
+
+[node name="Size_y" type="LineEdit" parent="Panel2/Size"]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 13.0
+offset_right = 222.063
+offset_bottom = 44.0
+virtual_keyboard_type = 3
+metadata/_edit_group_ = true
+
+[node name="Label" type="Label" parent="Panel2/Size/Size_y"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -19.5313
+offset_top = -30.0
+offset_right = 20.4688
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "y"
+horizontal_alignment = 1
+
+[node name="ExpandBtn" type="Button" parent="Panel2/Size"]
+layout_mode = 0
+offset_left = 247.0
+offset_top = 13.0
+offset_right = 281.0
+offset_bottom = 44.0
+text = "E"
+
+[node name="HorizontalCenterBtn" type="Button" parent="Panel2/Size"]
+layout_mode = 0
+offset_left = 289.0
+offset_top = 13.0
+offset_right = 323.0
+offset_bottom = 44.0
+text = "H"
+
+[node name="VerticalCenterBtn" type="Button" parent="Panel2/Size"]
+layout_mode = 0
+offset_left = 331.0
+offset_top = 13.0
+offset_right = 365.0
+offset_bottom = 44.0
+text = "V"
+
+[node name="Rotation" type="Label" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 835.0
+offset_top = -16.0
+offset_right = 903.0
+offset_bottom = 7.0
+grow_vertical = 2
+text = "rotation:"
+
+[node name="Rotation" type="LineEdit" parent="Panel2/Rotation"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 13.0
+offset_right = 147.063
+offset_bottom = 44.0
+virtual_keyboard_type = 3
+
+[node name="MorePropertiesBtn" type="Button" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -473.0
+offset_top = -4.0
+offset_right = -432.0
+offset_bottom = 27.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "..."
+
+[node name="CollisionBtn" type="Button" parent="Panel2"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -416.0
+offset_top = -62.0
+offset_right = -306.0
+offset_bottom = -25.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Collision"
+
+[node name="LayerToggle" type="Button" parent="Panel2"]
+layout_mode = 0
+offset_left = 1200.0
+offset_top = 14.0
+offset_right = 1253.0
+offset_bottom = 57.0
+theme_override_font_sizes/font_size = 25
+text = "^"
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(202, 770)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -202.0
+offset_bottom = 822.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1k8j1")
+
+[node name="AddComponentButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -22.0
+offset_top = 111.0
+offset_right = 55.0
+offset_bottom = 142.0
+grow_horizontal = 2
+text = "Add"
+
+[node name="SelectRootFolderBtn" type="Button" parent="Panel"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -38.0
+offset_top = 170.0
+offset_right = 39.0
+offset_bottom = 201.0
+grow_horizontal = 2
+text = "Root"
+
+[node name="AddComponent" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -79.0
+offset_top = 81.0
+offset_right = -39.0
+offset_bottom = 104.0
+grow_horizontal = 2
+text = "Add:"
+
+[node name="CurrentOption" type="Label" parent="Panel/AddComponent"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 37.0
+offset_top = 4.0
+offset_right = 129.0
+offset_bottom = 27.0
+grow_horizontal = 2
+mouse_filter = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_sn8r3")
+text = "Poster"
+
+[node name="ItemList" type="ItemList" parent="Panel/AddComponent/CurrentOption"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = 26.0
+offset_right = 48.0
+offset_bottom = 102.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7vrhf")
+item_count = 2
+item_0/text = "Poster"
+item_1/text = "Button"
+
+[node name="Window" type="Window" parent="Panel"]
+title = "XML"
+initial_position = 1
+size = Vector2i(500, 500)
+visible = false
+unresizable = true
+content_scale_size = Vector2i(500, 500)
+content_scale_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="Panel/Window"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.325441, 0.325441, 0.325441, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/Window/ColorRect"]
+custom_minimum_size = Vector2(450, 450)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -190.0
+offset_right = 225.0
+offset_bottom = 260.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "[output]"
+
+[node name="CopyBtn" type="Button" parent="Panel/Window/ColorRect"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -72.0
+offset_top = 15.0
+offset_right = -25.0
+offset_bottom = 46.0
+grow_horizontal = 0
+text = "Copy"
+
+[node name="OutputBtn" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -53.0
+offset_top = -132.0
+offset_right = 55.0
+offset_bottom = -69.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Output"
+
+[node name="TestBtn" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -54.0
+offset_top = -215.0
+offset_right = 54.0
+offset_bottom = -152.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Test"
+
+[node name="Node" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 437.0
+offset_right = 103.0
+offset_bottom = 479.0
+theme_override_font_sizes/font_size = 30
+text = "Node"
+
+[node name="Id" type="Label" parent="Panel/Node"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.0
+offset_top = 35.0
+offset_right = 7.0
+offset_bottom = 58.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Id:"
+
+[node name="NodeIdEdit" type="LineEdit" parent="Panel/Node/Id"]
+layout_mode = 0
+offset_left = 49.0
+offset_top = -1.0
+offset_right = 164.0
+offset_bottom = 30.0
+
+[node name="IdOkBtn" type="Button" parent="Panel/Node/Id"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 33.0
+offset_right = 100.0
+offset_bottom = 64.0
+text = "OK"
+
+[node name="Scene" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 182.0
+offset_right = 108.0
+offset_bottom = 224.0
+theme_override_font_sizes/font_size = 30
+text = "Scene"
+
+[node name="Name" type="Label" parent="Panel/Scene"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.5
+offset_top = 32.0
+offset_right = 8.5
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "name:"
+
+[node name="SceneNameEdit" type="LineEdit" parent="Panel/Scene/Name"]
+layout_mode = 0
+offset_left = 54.0
+offset_top = -1.0
+offset_right = 167.0
+offset_bottom = 30.0
+
+[node name="SceneNameOkBtn" type="Button" parent="Panel/Scene/Name"]
+layout_mode = 0
+offset_left = 55.0
+offset_top = 32.0
+offset_right = 105.0
+offset_bottom = 63.0
+text = "OK"
+
+[node name="ExtendOption" type="Label" parent="Panel/Scene"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.5
+offset_top = 126.0
+offset_right = 17.5
+offset_bottom = 149.0
+grow_horizontal = 2
+text = "extends:"
+
+[node name="CurrentOptionExtends" type="Label" parent="Panel/Scene/ExtendOption"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 49.0
+offset_top = 3.0
+offset_right = 141.0
+offset_bottom = 26.0
+grow_horizontal = 2
+mouse_filter = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_sn8r3")
+text = "Group"
+
+[node name="SceneExtendList" type="ItemList" parent="Panel/Scene/ExtendOption/CurrentOptionExtends"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.0
+offset_top = 26.0
+offset_right = 48.0
+offset_bottom = 102.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7vrhf")
+item_count = 1
+item_0/text = "Group"
+
+[node name="CursorPosition" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -37.0
+offset_top = 22.0
+offset_right = 37.0
+offset_bottom = 45.0
+grow_horizontal = 2
+text = "[222, 222]"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+initial_position = 1
+size = Vector2i(800, 550)
+access = 2
+
+[node name="Message" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -203.0
+offset_top = 13.0
+offset_right = 203.0
+offset_bottom = 36.0
+grow_horizontal = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_j857r")
+text = "This is a message"
+horizontal_alignment = 1
+
+[node name="MorePropertiesWind" type="Window" parent="."]
+title = "More properties"
+initial_position = 1
+size = Vector2i(500, 400)
+visible = false
+unresizable = true
+content_scale_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="MorePropertiesWind"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.325441, 0.325441, 0.325441, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MorePropertiesWind/ColorRect"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 1
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 525.0
+offset_bottom = 425.0
+vertical_scroll_mode = 3
+
+[node name="Container" type="VBoxContainer" parent="MorePropertiesWind/ColorRect/ScrollContainer"]
+layout_mode = 2
+
+[node name="InfoWindow" type="Window" parent="."]
+title = "Info"
+initial_position = 1
+size = Vector2i(500, 450)
+
+[node name="ColorRect" type="ColorRect" parent="InfoWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.325441, 0.325441, 0.325441, 1)
+
+[node name="Label" type="Label" parent="InfoWindow/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 20
+text = "1. All the images picked must be in \"pkg:/images/\" directory.
+
+2. Collision is not implemented yet, working on it.
+
+3. If you found any bugs or misbehaviours, report in the group."
+autowrap_mode = 2
+
+[node name="Panel3" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 627.0
+offset_right = -202.0
+offset_bottom = 720.0
+grow_horizontal = 2
+mouse_filter = 2
+script = SubResource("GDScript_ksyve")
+
+[node name="Label" type="Label" parent="Panel3"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 5.0
+offset_right = 86.0
+offset_bottom = 28.0
+text = "Layers"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = 37.0
+offset_right = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel3/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="pressed" from="Panel2/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="text_changed" from="Panel2/Position/LineEdit" to="." method="_on_line_edit_text_changed"]
+[connection signal="text_submitted" from="Panel2/Position/LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="text_changed" from="Panel2/Position/LineEdit2" to="." method="_on_line_edit_2_text_changed"]
+[connection signal="text_submitted" from="Panel2/Position/LineEdit2" to="." method="_on_line_edit_2_text_submitted"]
+[connection signal="text_changed" from="Panel2/Size/Size_x" to="." method="_on_size_x_text_changed"]
+[connection signal="text_submitted" from="Panel2/Size/Size_x" to="." method="_on_size_x_text_submitted"]
+[connection signal="text_changed" from="Panel2/Size/Size_y" to="." method="_on_size_y_text_changed"]
+[connection signal="text_submitted" from="Panel2/Size/Size_y" to="." method="_on_size_y_text_submitted"]
+[connection signal="pressed" from="Panel2/Size/ExpandBtn" to="." method="_on_expand_btn_pressed"]
+[connection signal="pressed" from="Panel2/Size/HorizontalCenterBtn" to="." method="_on_horizontal_center_btn_pressed"]
+[connection signal="pressed" from="Panel2/Size/VerticalCenterBtn" to="." method="_on_vertical_center_btn_pressed"]
+[connection signal="text_changed" from="Panel2/Rotation/Rotation" to="." method="_on_rotation_text_changed"]
+[connection signal="text_submitted" from="Panel2/Rotation/Rotation" to="." method="_on_rotation_text_submitted"]
+[connection signal="pressed" from="Panel2/MorePropertiesBtn" to="." method="_on_more_properties_btn_pressed"]
+[connection signal="pressed" from="Panel2/LayerToggle" to="." method="_on_layer_toggle_pressed"]
+[connection signal="pressed" from="Panel/AddComponentButton" to="." method="_on_add_component_button_pressed"]
+[connection signal="pressed" from="Panel/SelectRootFolderBtn" to="." method="_on_select_root_folder_btn_pressed"]
+[connection signal="gui_input" from="Panel/AddComponent/CurrentOption" to="." method="_on_current_option_gui_input"]
+[connection signal="item_clicked" from="Panel/AddComponent/CurrentOption/ItemList" to="." method="_on_item_list_item_clicked"]
+[connection signal="close_requested" from="Panel/Window" to="." method="_on_window_close_requested"]
+[connection signal="pressed" from="Panel/Window/ColorRect/CopyBtn" to="." method="_on_copy_btn_pressed"]
+[connection signal="pressed" from="Panel/OutputBtn" to="." method="_on_output_btn_pressed"]
+[connection signal="pressed" from="Panel/TestBtn" to="Scene" method="_on_test_btn_pressed"]
+[connection signal="pressed" from="Panel/Node/Id/IdOkBtn" to="." method="_on_id_ok_btn_pressed"]
+[connection signal="pressed" from="Panel/Scene/Name/SceneNameOkBtn" to="." method="_on_scene_name_ok_btn_pressed"]
+[connection signal="gui_input" from="Panel/Scene/ExtendOption/CurrentOptionExtends" to="." method="_on_current_option_extends_gui_input"]
+[connection signal="item_clicked" from="Panel/Scene/ExtendOption/CurrentOptionExtends/SceneExtendList" to="." method="_on_scene_extend_list_item_clicked"]
+[connection signal="dir_selected" from="FileDialog" to="." method="_on_file_dialog_dir_selected"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="close_requested" from="MorePropertiesWind" to="." method="_on_more_properties_window_close_requested"]
+[connection signal="close_requested" from="InfoWindow" to="." method="_on_info_window_close_requested"]

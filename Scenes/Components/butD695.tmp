@@ -1,0 +1,200 @@
+[gd_scene load_steps=3 format=3 uid="uid://ct68devbjxse3"]
+
+[sub_resource type="GDScript" id="GDScript_mdaey"]
+script/source = "extends Rectangle
+
+class_name RButton
+
+@onready var dot: Panel = $Panel
+@onready var focused_backup: ColorRect = $FocusedBackup
+@onready var normal_backup: ColorRect = $NormalBackup
+
+const STARTING: Vector2 = Vector2(108, 80)
+var min_width: float
+var max_width: float
+
+var default_max_width: float = 32767
+
+var focused_uri: String
+var normal_uri: String
+
+var last_focused_uri: String
+var last_normal_uri: String
+
+var text: String
+
+var focused_texture_rect: TextureRect
+var normal_texture_rect: TextureRect
+var text_label: Label
+
+func _ready() -> void:
+	super()
+	focused_backup.hide()
+	normal_backup.hide()
+	max_width = default_max_width
+
+# adds a texture rect node and also loads the image.
+func get_texture(path: String) -> TextureRect:
+	var t: TextureRect = TextureRect.new()
+	add_child(t)
+	t.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	t.stretch_mode = TextureRect.STRETCH_SCALE
+	t.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var i: Image =  Image.new()
+	i.load(path)
+	t.texture = ImageTexture.create_from_image(i)
+	t.show_behind_parent = true
+	return t
+
+
+# sets the focused texture.
+func set_focused_image(path: String) -> void:
+	if focused_texture_rect:
+		remove_child(focused_texture_rect)
+		focused_texture_rect = null
+	focused_uri = \"pkg:/images/\" + path.get_file()
+	var t: TextureRect = get_texture(path)
+	focused_texture_rect = t
+	t.hide()
+	if text_label:
+		move_child(text_label, -1)
+
+# sets the normal texture.
+func set_normal_image(path: String) -> void:
+	if normal_texture_rect:
+		remove_child(normal_texture_rect)
+		normal_texture_rect = null
+	normal_uri = \"pkg:/images/\" + path.get_file()
+	var t: TextureRect = get_texture(path)
+	normal_texture_rect = t
+	if text_label:
+		move_child(text_label, -1)
+	#t.hide()
+
+# adds the text of button
+func set_text(val: String) -> void:
+	val += \"   \"
+	if text_label:
+		remove_child(text_label)
+		text_label = null
+	var l: Label = Label.new()
+	l.text = val
+	text = l.text
+	l.set(\"theme_override_font_sizes/font_size\", 30)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	l.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(l)
+	text_label = l
+	
+	
+func _process(delta: float) -> void:
+	super(delta)
+	if get_mode() == 1:
+		set_dot_white()
+		normal_backup.hide()
+		focused_backup.hide()
+	else:
+		if is_mouse_inside():
+			if normal_texture_rect:
+				normal_texture_rect.hide()
+			else:
+				normal_backup.hide()
+			if focused_texture_rect:
+				focused_texture_rect.show()
+			else:
+				print(\"called\")
+				focused_backup.show()
+			set_dot_black()
+		else:
+			if normal_texture_rect:
+				normal_texture_rect.show()
+			else:
+				normal_backup.show()
+			if focused_texture_rect:
+				focused_texture_rect.hide()
+			else:
+				focused_backup.hide()
+			set_dot_white()
+	if focused_texture_rect:
+		focused_texture_rect.size = size
+	if normal_texture_rect:
+		normal_texture_rect.size = size
+	if text_label:
+		#print(((size * 30) / STARTING).length())
+		#text_label.set(\"theme_override_font_sizes/font_size\", (size * 30) / STARTING)
+		custom_minimum_size.y = text_label.get_line_height() + 5
+		custom_minimum_size.x = text_label.text.length() * text_label.get_line_height() / 2 + 10
+	else:
+		custom_minimum_size = Vector2.ZERO
+
+func is_mouse_inside() -> bool:
+	return Rect2(position, size).has_point(get_global_mouse_position())
+	
+
+
+
+func set_dot_black() -> void:
+	var style: StyleBoxFlat = dot.get(\"theme_override_styles/panel\").duplicate()
+	style.bg_color = Color.BLACK
+	dot.set(\"theme_override_styles/panel\", style)
+	
+	
+
+func set_dot_white() -> void:
+	var style: StyleBoxFlat = dot.get(\"theme_override_styles/panel\").duplicate()
+	style.bg_color = Color.WHITE
+	dot.set(\"theme_override_styles/panel\", style)
+	
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u7i6j"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[node name="Button" type="ReferenceRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+border_color = Color(1, 0.682353, 0, 1)
+border_width = 2.0
+editor_only = false
+script = SubResource("GDScript_mdaey")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -5.0
+offset_right = 20.0
+offset_bottom = 5.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_u7i6j")
+
+[node name="Corners" type="Node2D" parent="."]
+
+[node name="FocusedBackup" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="NormalBackup" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.165656, 0.165656, 0.165656, 1)
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

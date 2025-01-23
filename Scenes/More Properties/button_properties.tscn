@@ -1,0 +1,138 @@
+[gd_scene load_steps=5 format=3 uid="uid://cn6bcf3w57o7j"]
+
+[ext_resource type="PackedScene" uid="uid://b1j0dm4385s1x" path="res://Scenes/Prefabs/edit_input.tscn" id="1_6kd2n"]
+[ext_resource type="PackedScene" uid="uid://ccu7itjq7nl6j" path="res://Scenes/Prefabs/file_dialog_input.tscn" id="2_nqeqi"]
+[ext_resource type="PackedScene" uid="uid://dnafrfyshd31m" path="res://Scenes/Prefabs/text_input.tscn" id="3_5p2xs"]
+
+[sub_resource type="GDScript" id="GDScript_8h46u"]
+script/source = "extends Control
+
+signal _min_width_changed
+signal _max_width_changed
+signal _focused_uri_changed
+signal _normal_uri_changed
+signal _text_changed
+signal _text_deleted
+
+
+@onready var min_width: Label = $VBoxContainer/MinWidth
+@onready var max_width: Label = $VBoxContainer/MaxWidth
+@onready var focused_image: Label = $VBoxContainer/FocusedImage
+@onready var normal_image: Label = $VBoxContainer/NormalImage
+@onready var text: Label = $VBoxContainer/Text
+
+
+func _ready() -> void:
+	min_width.initialize(0, 32767)
+	max_width.initialize(0, 32767)
+	
+func _set_min_width(a: float) -> void:
+	min_width.set_value(a)
+
+func _set_max_width(a: float) -> void:
+	max_width.set_value(a)
+
+func _set_focused_uri(a: String) -> void:
+	focused_image.set_value(a)
+
+func _set_normal_uri(a: String) -> void:
+	normal_image.set_value(a)
+
+func _set_text(a: String) -> void:
+	text.set_value(a)
+	
+func _on_min_width_filled(val: String) -> void:
+	if int(val) >= 0 and int(val) <= 32767:
+		_min_width_changed.emit(float(val))
+	else:
+		get_tree().get_first_node_in_group(\"main\").show_message(\"min width should be in range 0 to 32767\")
+
+
+func _on_max_width_filled(val: String) -> void:
+	if int(val) <= 32767:
+		_max_width_changed.emit(float(val))
+	else:
+		get_tree().get_first_node_in_group(\"main\").show_message(\"max width should be less than or equal to 32767\")
+		
+
+
+func _on_focused_image_filled(val: String) -> void:
+	_focused_uri_changed.emit(val)
+
+
+func _on_normal_image_filled(val: String) -> void:
+	_normal_uri_changed.emit(val)
+
+
+func _on_text_empty_filled() -> void:
+	get_tree().get_first_node_in_group(\"main\").show_message(\"text cannot be set empty\")
+	
+
+
+func _on_text_filled(val: String) -> void:
+	_text_changed.emit(val)
+
+
+func _on_text_delete() -> void:
+	_text_deleted.emit()
+"
+
+[node name="ButtonProperties" type="Control" groups=["button_properties"]]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -522.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_8h46u")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 91.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "Button"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_top = 61.0
+offset_right = 86.0
+offset_bottom = 111.0
+theme_override_constants/separation = 20
+
+[node name="MinWidth" parent="VBoxContainer" instance=ExtResource("1_6kd2n")]
+visible = false
+layout_mode = 2
+text = "min_width:"
+property_name = "min_width"
+
+[node name="MaxWidth" parent="VBoxContainer" instance=ExtResource("1_6kd2n")]
+visible = false
+layout_mode = 2
+text = "max_width:"
+property_name = "max_width"
+
+[node name="FocusedImage" parent="VBoxContainer" instance=ExtResource("2_nqeqi")]
+layout_mode = 2
+text = "focused_image:"
+property_name = "focused_image"
+
+[node name="NormalImage" parent="VBoxContainer" instance=ExtResource("2_nqeqi")]
+layout_mode = 2
+text = "normal_image:"
+property_name = "normal_image"
+
+[node name="Text" parent="VBoxContainer" instance=ExtResource("3_5p2xs")]
+layout_mode = 2
+text = "text:"
+property_name = "text"
+
+[connection signal="filled" from="VBoxContainer/MinWidth" to="." method="_on_min_width_filled"]
+[connection signal="filled" from="VBoxContainer/MaxWidth" to="." method="_on_max_width_filled"]
+[connection signal="filled" from="VBoxContainer/FocusedImage" to="." method="_on_focused_image_filled"]
+[connection signal="filled" from="VBoxContainer/NormalImage" to="." method="_on_normal_image_filled"]
+[connection signal="delete" from="VBoxContainer/Text" to="." method="_on_text_delete"]
+[connection signal="empty_filled" from="VBoxContainer/Text" to="." method="_on_text_empty_filled"]
+[connection signal="filled" from="VBoxContainer/Text" to="." method="_on_text_filled"]

@@ -1,0 +1,64 @@
+[gd_scene load_steps=4 format=3 uid="uid://lt7tvn3813o7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qdvx0"]
+bg_color = Color(0.646029, 0.646029, 0.646029, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_6hn4d"]
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="GDScript" id="GDScript_bbrh4"]
+script/source = "extends Label
+
+var layer_ref: Control
+
+
+
+func _process(delta: float) -> void:
+	if get_tree().has_group(\"main\"):
+		if get_tree().get_first_node_in_group(\"main\").current_rectangle == layer_ref:
+			get_parent().move_child(self, 0)
+			set_border(true)
+		else:
+			set_border(false)
+
+func set_border(a: bool) -> void:
+	var style: StyleBoxFlat = get(\"theme_override_styles/normal\").duplicate()
+	if a:
+		style.border_width_bottom = 3
+		style.border_width_left = 3
+		style.border_width_right = 3
+		style.border_width_top = 3
+		style.border_color = Color.YELLOW
+	else:
+		style.border_width_bottom = 0
+		style.border_width_left = 0
+		style.border_width_right = 0
+		style.border_width_top = 0
+	set(\"theme_override_styles/normal\", style)
+	
+	
+
+
+func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if layer_ref:
+				get_parent().move_child(self, 0)
+				var main = get_tree().get_first_node_in_group(\"main\")
+				main.current_rectangle = layer_ref
+				main.scene.move_child(get_tree().get_first_node_in_group(\"main\").current_rectangle, -1)
+"
+
+[node name="LayerItem" type="Label"]
+custom_minimum_size = Vector2(64, 0)
+offset_right = 64.0
+offset_bottom = 36.0
+mouse_filter = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_qdvx0")
+text = "Poster"
+label_settings = SubResource("LabelSettings_6hn4d")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = SubResource("GDScript_bbrh4")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
