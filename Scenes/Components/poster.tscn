@@ -12,7 +12,7 @@ script/source = "extends Rectangle
 
 
 var texture_rect: TextureRect
-var uri: String
+@export var uri: String
 
 var last_uri: String
 

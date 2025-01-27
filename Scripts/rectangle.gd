@@ -9,7 +9,7 @@ const CORNER = preload("res://Scenes/Prefabs/corner.tscn")
 
 const dragger_width: float = 20
 var id: String
-var component_type_idx: int
+@export var component_type_idx: int
 
 var holded: bool
 
@@ -36,6 +36,7 @@ func connect_input() -> void:
 func _resize_rectangle(delta: Vector2, handle_id: int):
 	var mouse_pos = get_global_mouse_position()
 	var rect_end = position + size
+	print("cale")
 	match handle_id:
 		0:
 			position.y += mouse_pos.y - position.y
@@ -145,14 +146,13 @@ func is_holded() -> bool:
 	
 
 func _show_corners() -> void:
-	for i in corners.get_children():
-		if i is ColorRect:
-			i.show()
+	#print("show cal" + str(name))
+	corners.show()
+
 
 func _hide_corners() -> void:
-	for i in corners.get_children():
-		if i is ColorRect:
-			i.hide()
+	#print("hide" + str(name))
+	corners.hide()
 
 # handle the input of the main rectangle.
 func _gui_input(event: InputEvent) -> void:
@@ -181,7 +181,7 @@ func _on_handle_input(event: InputEvent, handle_id: int):
 		else:
 			# Stop dragging
 			handle_dragged = -1
-	elif event is InputEventMouseMotion and handle_dragged == handle_id:
+	elif event is InputEventScreenDrag and handle_dragged == handle_id:
 		if rotation == 0:
 			_resize_rectangle(event.relative, handle_id)
 	

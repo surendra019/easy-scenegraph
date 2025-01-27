@@ -6,9 +6,12 @@ class_name PropertyManager
 const BUTTON_PROPERTIES = preload("res://Scenes/More Properties/button_properties.tscn")
 const GROUP_PROPERTIES = preload("res://Scenes/More Properties/group_properties.tscn")
 const POSTER_PROPERTIES = preload("res://Scenes/More Properties/poster_properties.tscn")
+const LABELBASE_PROPERTIES = preload("res://Scenes/More Properties/labelbase_properties.tscn")
+const RECTANGLE_PROPERTIES = preload("res://Scenes/More Properties/rectangle_properties.tscn")
 
-@onready var more_properties_window: Window = $MorePropertiesWind
-@onready var more_properties_container: VBoxContainer = $MorePropertiesWind/ColorRect/ScrollContainer/Container
+@onready var more_properties_container: VBoxContainer = $Info/MorePropertiesWind/ColorRect/ScrollContainer/Container
+@onready var more_properties_window_bg: ColorRect = $Info
+@onready var more_properties_window: Window = $Info/MorePropertiesWind
 
 @onready var file_dialog: FileDialog = $FileDialog
 
@@ -68,6 +71,40 @@ func add_poster_properties() -> void:
 	var p: Control = POSTER_PROPERTIES.instantiate()
 	more_properties_container.add_child(p)
 
+func add_rectangle_properties() -> void:
+	var p: Control = RECTANGLE_PROPERTIES.instantiate()
+	more_properties_container.add_child(p)
+	
+func add_labelbase_properties() -> void:
+	var p: Control = LABELBASE_PROPERTIES.instantiate()
+	more_properties_container.add_child(p)
+
+
+func set_rectangle_properties() -> void:
+	var p: Control = get_tree().get_first_node_in_group("rectangle_properties")
+	if !current_rectangle:
+		return
+	p._set_color(current_rectangle.color)
+	p._color_changed.connect(func(val: Color):
+		current_rectangle.set_color(val)
+		)
+	
+func set_labelbase_properties() -> void:
+	var p: Control = get_tree().get_first_node_in_group("labelbase_properties")
+	if !current_rectangle:
+		return
+	p._set_text(current_rectangle.text)
+	p._set_color(current_rectangle.color)
+	p._text_changed.connect(func(val: String):
+		current_rectangle.set_text(val)
+		)
+	p._text_deleted.connect(func():
+		current_rectangle.remove_text()
+		)
+	p._color_changed.connect(func(val: Color):
+		current_rectangle.set_text_color(val)
+		)
+		
 func set_poster_properties() -> void:
 	var p = get_tree().get_first_node_in_group("poster_properties")
 	if current_rectangle:

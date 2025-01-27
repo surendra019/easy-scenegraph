@@ -1,10 +1,9 @@
 [gd_scene load_steps=4 format=3 uid="uid://lt7tvn3813o7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qdvx0"]
-bg_color = Color(0.646029, 0.646029, 0.646029, 1)
+bg_color = Color(0.133196, 0.133196, 0.133196, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_6hn4d"]
-font_color = Color(0, 0, 0, 1)
 
 [sub_resource type="GDScript" id="GDScript_bbrh4"]
 script/source = "extends Label
@@ -15,11 +14,16 @@ var layer_ref: Control
 
 func _process(delta: float) -> void:
 	if get_tree().has_group(\"main\"):
-		if get_tree().get_first_node_in_group(\"main\").current_rectangle == layer_ref:
+		var main = get_tree().get_first_node_in_group(\"main\")
+		if layer_ref:
+			text =  main.component_list.get_item_text(layer_ref.component_type_idx) + \": \" + layer_ref.id
+			
+		if main.current_rectangle == layer_ref:
 			get_parent().move_child(self, 0)
 			set_border(true)
 		else:
 			set_border(false)
+
 
 func set_border(a: bool) -> void:
 	var style: StyleBoxFlat = get(\"theme_override_styles/normal\").duplicate()

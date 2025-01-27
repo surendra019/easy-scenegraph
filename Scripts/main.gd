@@ -16,19 +16,20 @@ extends PropertyManager
 @onready var _rotation: LineEdit = $Panel2/Rotation/Rotation
 @onready var _size_x: LineEdit = $Panel2/Size/Size_x
 @onready var _size_y: LineEdit = $Panel2/Size/Size_y
-@onready var output_label: RichTextLabel = $Panel/Window/ColorRect/RichTextLabel
 @onready var output_window: Window = $Panel/Window
 @onready var class_list: ItemList = $Panel/Scene/ExtendOption/CurrentOptionExtends/SceneExtendList
 @onready var current_component_extend_label: Label = $Panel/Scene/ExtendOption/CurrentOptionExtends
+@onready var output_label: RichTextLabel = $Panel/Window/ColorRect/VBoxContainer/RichTextLabel
 
 @onready var node: Label = $Panel/Node
 @onready var id_edit: LineEdit = $Panel/Node/Id/NodeIdEdit
 
 const POSTER = preload("res://Scenes/Components/poster.tscn")
 const BUTTON = preload("res://Scenes/Components/button.tscn")
+const LABEL = preload("res://Scenes/Components/label.tscn")
+const RECTANGLE = preload("res://Scenes/Components/rectangle.tscn")
 
 const spawn_position := Vector2(200, 200)
-const xml_starting: String = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n\n"
 
 var main_string: String
 var current_component_index: int
@@ -50,7 +51,9 @@ func _ready() -> void:
 	scene_extends = class_list.get_item_text(0)
 	add_rectangle()
 
+
 func _process(delta: float) -> void:
+	handle_inputs()
 	if Rect2(scene.position, scene.size).has_point(get_global_mouse_position()):
 		cursor_position.show()
 	else:
@@ -78,6 +81,43 @@ func _process(delta: float) -> void:
 	else:
 		hide_properties()
 
+
+func handle_inputs() -> void:
+	if Input.is_action_just_pressed("delete"):
+		if scene.get_mode() == 0:
+			show_message("cannot perform this action in test mode")
+			return 
+		delete_current_node()
+		
+	if Input.is_action_just_pressed("copy_node"):
+		if scene.get_mode() == 0:
+			show_message("cannot perform this action in test mode")
+			return 
+		if current_rectangle:
+			Manager.copied_node = current_rectangle.duplicate()
+			show_action("copy node")
+			
+	if Input.is_action_just_pressed("paste_node"):
+		if scene.get_mode() == 0:
+			show_message("cannot perform this action in test mode")
+			return 
+		paste_node()
+		show_action("paste node")
+		
+	if Input.is_action_just_pressed("duplicate_node"):
+		if scene.get_mode() == 0:
+			show_message("cannot perform this action in test mode")
+			return 
+		if current_rectangle:
+			Manager.copied_node = current_rectangle.duplicate()
+			Manager.copied_node.component_type_idx = current_rectangle.component_type_idx
+		var res : bool = paste_node(true)
+		if res:
+			show_action("duplicate node")
+		
+func show_action(s: String) -> void:
+	show_message("[ACTION]: " + s)
+	
 # shows the text message at the top center of the screen.
 func show_message(s: String) -> void:
 	message.text = s
@@ -85,19 +125,6 @@ func show_message(s: String) -> void:
 	await get_tree().create_timer(3).timeout
 	message.hide()
 	
-# adds the starting lines.
-func initialize_file() -> bool:
-	main_string += xml_starting
-	if scene_name == "":
-		show_message("scene name cannot be empty")
-		return false
-	if scene_extends == "":
-		show_message("scene should extend a class")
-		return false
-	main_string += get_component_starting(scene_name, scene_extends)
-	main_string += get_script_line(scene_name + ".brs")
-	main_string += "\t<children>\n"
-	return true
 
 # adds a rectangle.
 func add_rectangle() -> void:
@@ -107,60 +134,32 @@ func add_rectangle() -> void:
 			r = POSTER.instantiate()
 		1:
 			r = BUTTON.instantiate()
+		2:
+			r = LABEL.instantiate()
+		3: 
+			r = RECTANGLE.instantiate()
 	scene.add_child(r)
 	layer_manager.add_layer(component_list.get_item_text(current_component_index), r)
 	r.position = spawn_position
 	r.component_type_idx = current_component_index
 	current_rectangle = r
+
+# paste the copied node in to position.
+func paste_node(on_same_pos: bool = false) -> bool:
+	if Rect2(scene.position, scene.size).has_point(get_global_mouse_position()):
+		if Manager.copied_node:
+			scene.add_child(Manager.copied_node)
+			layer_manager.add_layer(component_list.get_item_text(current_component_index), Manager.copied_node)
+			if !on_same_pos:
+				Manager.copied_node.position = get_global_mouse_position()
+			current_rectangle = Manager.copied_node
+			Manager.copied_node = Manager.copied_node.duplicate()
+			return true
+			
+	return false
 	
 	
-# returns the component starting tag by setting the variable.
-func get_component_starting(_name: String, _extends: String) -> String:
-	return "<component name=\"" + _name + "\" " + "extends=\"" + _extends + "\">\n"
 
-# returns the script line to attach.
-func get_script_line(_uri: String) -> String:
-	return "\t<script type=\"text/brightscript\" uri=\"" + _uri + "\"/>\n" 
-
-# ends the main string by closing the tags.
-func end_main_string() -> void:
-	main_string += "\t</children>\n"
-	main_string += "</component>"
-
-# processes the complete scene and generate the xml string.
-func process_scene() -> bool:
-	main_string = ""
-	var res: bool = initialize_file()
-	if !res:
-		return false
-	for i in scene.get_children():
-		if i.id == "":
-			show_message("id cannot be empty")
-			return false
-		match i.component_type_idx:
-			0:
-				main_string += "\t\t<Poster\n"
-				main_string += "\t\t\turi=\"" + i.uri + "\"\n"
-				main_string += "\t\t\twidth=\"" + str(i.size.x) + "\"\n"
-			1:
-				main_string += "\t\t<Button\n"
-				main_string += "\t\t\tminWidth=\"" + str(i.size.x) + "\"\n"
-				main_string += "\t\t\tmaxWidth=\"" + str(i.size.x) + "\"\n"
-				if i.normal_uri != "":
-					main_string += "\t\t\tshowFocusFootprint=\"true\"\n"
-					main_string += "\t\t\tfocusFootprintBitmapUri=\"" + i.normal_uri + "\"\n"
-				if i.focused_uri != "":
-					main_string += "\t\t\tfocusBitmapUri=\"" + i.focused_uri + "\"\n"
-				if i.text != "":
-					main_string += "\t\t\ttext=\"" + (i.text.trim_suffix("   ")) + "\"\n"
-		main_string += "\t\t\tid=\"" + i.id + "\"\n"
-		main_string += "\t\t\tvisible=\"" + str(i.visible) + "\"\n"
-		main_string += "\t\t\topacity=\"" + str(i.modulate.a) + "\"\n" 
-		main_string += "\t\t\trotation=\"" + str(-i.rotation) + "\"\n"
-		main_string += "\t\t\theight=\"" + str(i.size.y) + "\"\n"
-		main_string += "\t\t\ttranslation=\"[" + str(i.position.x) + "," + str(i.position.y) + "]\"\n"
-		main_string += "\t\t/>\n"
-	return true
 
 func show_properties() -> void:
 	for i in property_panel.get_children():
@@ -224,6 +223,7 @@ func _on_line_edit_2_text_submitted(new_text: String) -> void:
 
 func _on_size_x_text_changed(new_text: String) -> void:
 	if current_rectangle and new_text != "":
+		#print("changed")
 		current_rectangle.size.x = float(new_text)
 
 
@@ -256,19 +256,21 @@ func _on_rotation_text_submitted(new_text: String) -> void:
 
 
 func _on_delete_button_pressed() -> void:
+	delete_current_node()
+
+
+func delete_current_node() -> void:
 	if scene.get_mode() == 0:
 		show_message("cannot perform this action in test mode")
 		return
 	if current_rectangle:
 		layer_manager.remove_layer(current_rectangle)
 		scene.remove_child(current_rectangle)
+		show_action("delete node")
 		if scene.get_child_count() > 0:
 			set_current_rectangle(scene.get_child(scene.get_child_count() - 1))
 		else:
 			current_rectangle = null
-
-
-
 func _on_file_dialog_file_selected(path: String) -> void:
 	if current_rectangle:
 		current_rectangle.add_image((path))
@@ -314,14 +316,18 @@ func _on_window_close_requested() -> void:
 
 
 func _on_output_btn_pressed() -> void:
+	main_string = ""
 	if output_window.visible:
 		return
-	var result: bool = process_scene()
-	if result:
-		show_message("success")
-		end_main_string()
-		output_label.text = main_string
-		output_window.show()
+	var result: String = scene.process_scene()
+	if result == "":
+		return
+		
+	show_message("success")
+	result = scene.end_main_string(result)
+	main_string = result
+	output_label.text = result
+	output_window.show()
 
 
 func _on_copy_btn_pressed() -> void:
@@ -361,9 +367,6 @@ func _on_scene_name_ok_btn_pressed() -> void:
 	scene_name_edit.placeholder_text = scene_name_edit.text
 	scene_name_edit.text = ""
 	
-	
-	
-
 
 func _on_scene_extend_list_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
 	current_component_extend_index = index
@@ -381,11 +384,17 @@ func _on_more_properties_btn_pressed() -> void:
 				
 			match current_rectangle.component_type_idx:
 				0:
-					add_group_properties()
 					add_poster_properties()
-				1:
 					add_group_properties()
+				1:
 					add_button_properties()
+					add_group_properties()
+				2:
+					add_labelbase_properties()
+					add_group_properties()
+				3:
+					add_rectangle_properties()
+					add_group_properties()
 			last_selection_type = current_rectangle.component_type_idx
 		match current_rectangle.component_type_idx:
 			0:
@@ -394,12 +403,20 @@ func _on_more_properties_btn_pressed() -> void:
 			1:
 				set_group_properties()
 				set_button_properties()
+			2:
+				set_labelbase_properties()
+				set_group_properties()
+			3:
+				set_rectangle_properties()
+				set_group_properties()
 	more_properties_window.show()
+	more_properties_window_bg.show()
 
 
 
 func _on_more_properties_window_close_requested() -> void:
 	more_properties_window.hide()
+	more_properties_window_bg.hide()
 
 
 func _on_info_window_close_requested() -> void:
@@ -413,3 +430,11 @@ func _on_layer_toggle_pressed() -> void:
 	else:
 		layer_manager.show()
 		layer_toggle_btn.text = "-"
+
+
+func _on_brs_pressed() -> void:
+	print("show brs code")
+
+
+func _on_xml_pressed() -> void:
+	print("show xml code")

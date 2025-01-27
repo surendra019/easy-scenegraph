@@ -1,0 +1,50 @@
+[gd_scene load_steps=3 format=3 uid="uid://becd2qwew3a57"]
+
+[ext_resource type="PackedScene" uid="uid://c0mdmerqmwagp" path="res://Scenes/Prefabs/color_input.tscn" id="1_2bu3j"]
+
+[sub_resource type="GDScript" id="GDScript_oag71"]
+script/source = "extends Control
+
+signal _color_changed(c: Color)
+
+@onready var color_edit: Label = $VBoxContainer/ColorEdit
+
+func _set_color(c: Color) -> void:
+	color_edit.set_value(c)
+
+
+func _on_color_edit_color_selected(c: Color) -> void:
+	_color_changed.emit(c)
+"
+
+[node name="RectangleProperties" type="Control" groups=["rectangle_properties"]]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -672.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_oag71")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 91.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "Rectangle"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_top = 61.0
+offset_right = 86.0
+offset_bottom = 111.0
+theme_override_constants/separation = 20
+
+[node name="ColorEdit" parent="VBoxContainer" instance=ExtResource("1_2bu3j")]
+layout_mode = 2
+text = "color:"
+property_name = "color"
+
+[connection signal="color_selected" from="VBoxContainer/ColorEdit" to="." method="_on_color_edit_color_selected"]

@@ -5,23 +5,26 @@ script/source = "extends Rectangle
 
 class_name RButton
 
-@onready var dot: Panel = $Panel
+@export var dot: Panel
 @onready var focused_backup: ColorRect = $FocusedBackup
 @onready var normal_backup: ColorRect = $NormalBackup
 
 const STARTING: Vector2 = Vector2(108, 80)
-var min_width: float
-var max_width: float
+@export var min_width: float
+@export var max_width: float
 
 var default_max_width: float = 32767
 
-var focused_uri: String
-var normal_uri: String
+@export var focused_uri: String
+@export var normal_uri: String
+
+@export var focused_path: String
+@export var normal_path: String
 
 var last_focused_uri: String
 var last_normal_uri: String
 
-var text: String
+@export var text: String
 
 var focused_texture_rect: TextureRect
 var normal_texture_rect: TextureRect
@@ -29,6 +32,17 @@ var text_label: Label
 
 func _ready() -> void:
 	super()
+	dot.position.x = 22
+	dot.position.y = (size.y - dot.size.y) / 2
+	if focused_path != \"\":
+		set_focused_image(focused_path)
+	if normal_path != \"\":
+		set_normal_image(normal_path)
+	if text != \"\":
+		for i in get_children():
+			if i is Label:
+				text_label = i
+				break
 	focused_backup.hide()
 	normal_backup.hide()
 	max_width = default_max_width
@@ -53,6 +67,7 @@ func set_focused_image(path: String) -> void:
 		remove_child(focused_texture_rect)
 		focused_texture_rect = null
 	focused_uri = \"pkg:/images/\" + path.get_file()
+	focused_path = path
 	var t: TextureRect = get_texture(path)
 	focused_texture_rect = t
 	t.hide()
@@ -65,6 +80,7 @@ func set_normal_image(path: String) -> void:
 		remove_child(normal_texture_rect)
 		normal_texture_rect = null
 	normal_uri = \"pkg:/images/\" + path.get_file()
+	normal_path = path
 	var t: TextureRect = get_texture(path)
 	normal_texture_rect = t
 	if text_label:
@@ -160,13 +176,14 @@ corner_radius_top_right = 50
 corner_radius_bottom_right = 50
 corner_radius_bottom_left = 50
 
-[node name="Button" type="ReferenceRect"]
+[node name="Button" type="ReferenceRect" node_paths=PackedStringArray("dot")]
 offset_right = 40.0
 offset_bottom = 40.0
 border_color = Color(1, 0.682353, 0, 1)
 border_width = 2.0
 editor_only = false
 script = SubResource("GDScript_mdaey")
+dot = NodePath("Panel")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1

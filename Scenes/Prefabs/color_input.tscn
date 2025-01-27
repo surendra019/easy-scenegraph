@@ -1,0 +1,85 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0mdmerqmwagp"]
+
+[sub_resource type="GDScript" id="GDScript_aw48x"]
+script/source = "@tool
+extends PropertyInput
+
+
+signal color_selected(c: Color)
+
+@onready var color_rect: ColorRect = $ColorRect
+@onready var color_picker: ColorPicker = $ColorPicker
+
+var default_color: Color = Color.WHITE
+
+
+func _ready() -> void:
+	color_picker.hide()
+
+func set_value(c: Color)-> void:
+	color_rect.color = c
+
+func _on_color_picker_color_changed(color: Color) -> void:
+	color_rect.color = color
+	color_selected.emit(color)
+
+
+func _on_reset_btn_pressed() -> void:
+	color_rect.color = default_color
+	color_selected.emit(default_color)
+
+
+func _on_color_rect_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if !color_picker.visible:
+				color_picker.show()
+
+
+func _on_ok_btn_pressed() -> void:
+	color_picker.hide()
+"
+
+[node name="ColorEdit" type="Label"]
+offset_right = 89.0
+offset_bottom = 23.0
+text = ":"
+script = SubResource("GDScript_aw48x")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = -1.0
+offset_right = 140.0
+offset_bottom = 26.0
+
+[node name="ResetBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 151.0
+offset_top = -3.0
+offset_right = 210.0
+offset_bottom = 28.0
+text = "Reset"
+
+[node name="OkBtn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 221.0
+offset_top = -3.0
+offset_right = 252.0
+offset_bottom = 28.0
+text = "Ok"
+
+[node name="ColorPicker" type="ColorPicker" parent="."]
+visible = false
+z_index = 50
+layout_mode = 0
+offset_left = 96.0
+offset_top = 29.0
+offset_right = 394.0
+offset_bottom = 605.0
+scale = Vector2(0.7, 0.7)
+
+[connection signal="gui_input" from="ColorRect" to="." method="_on_color_rect_gui_input"]
+[connection signal="pressed" from="ResetBtn" to="." method="_on_reset_btn_pressed"]
+[connection signal="pressed" from="OkBtn" to="." method="_on_ok_btn_pressed"]
+[connection signal="color_changed" from="ColorPicker" to="." method="_on_color_picker_color_changed"]

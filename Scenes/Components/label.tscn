@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://ebdlrhrpx72x"]
+
+[sub_resource type="GDScript" id="GDScript_l645b"]
+script/source = "extends Rectangle
+
+@onready var text_label: Label = $Label
+
+
+@export var text: String
+@export var color: Color = Color.WHITE
+
+func remove_text() -> void:
+	text = \"\"
+	text_label.text = text
+
+func set_text(val: String) -> void:
+	text = val
+	text_label.text = text
+
+func set_text_color(c: Color) -> void:
+	text_label.set(\"theme_override_colors/font_color\", c)
+	color = c
+	
+func _process(delta: float) -> void:
+	super(delta)
+	if text_label:
+		custom_minimum_size.y = text_label.get_line_height() + 5
+		custom_minimum_size.x = text_label.text.length() * text_label.get_line_height() / 2 + 10
+	else:
+		custom_minimum_size = Vector2.ZERO
+"
+
+[node name="Label" type="ReferenceRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+border_color = Color(1, 0.682353, 0, 1)
+border_width = 2.0
+editor_only = false
+script = SubResource("GDScript_l645b")
+
+[node name="Corners" type="Node2D" parent="."]
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30

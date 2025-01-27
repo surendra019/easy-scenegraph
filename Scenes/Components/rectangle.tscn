@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=3 uid="uid://kpdtioai2ef3"]
+
+[sub_resource type="GDScript" id="GDScript_6xcpe"]
+script/source = "extends Rectangle
+
+@onready var color_rect: ColorRect = $ColorRect
+@export var color: Color = Color.WHITE
+
+
+func set_color(c: Color) -> void:
+	color = c
+	color_rect.color = c
+	
+"
+
+[node name="Rectangle" type="ReferenceRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+border_color = Color(1, 0.682353, 0, 1)
+border_width = 2.0
+editor_only = false
+script = SubResource("GDScript_6xcpe")
+
+[node name="Corners" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

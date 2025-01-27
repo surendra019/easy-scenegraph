@@ -1,0 +1,77 @@
+[gd_scene load_steps=4 format=3 uid="uid://8c2rfca85enj"]
+
+[ext_resource type="PackedScene" uid="uid://dnafrfyshd31m" path="res://Scenes/Prefabs/text_input.tscn" id="1_3icss"]
+[ext_resource type="PackedScene" uid="uid://c0mdmerqmwagp" path="res://Scenes/Prefabs/color_input.tscn" id="2_glfa5"]
+
+[sub_resource type="GDScript" id="GDScript_io8fb"]
+script/source = "extends Control
+
+class_name RLabel
+
+signal _text_changed
+signal _text_deleted
+signal _color_changed
+
+@onready var text: Label = $VBoxContainer/Text
+@onready var color: Label = $VBoxContainer/color
+
+func _set_text(a: String) -> void:
+	text.set_value(a)
+
+func _set_color(a: Color) -> void:
+	color.set_value(a)
+
+func _on_line_edit_delete() -> void:
+	_text_deleted.emit()
+
+
+func _on_line_edit_filled(val: String) -> void:
+	_text_changed.emit(val)
+
+func _on_line_edit_empty_filled() -> void:
+	get_tree().get_first_node_in_group(\"main\").show_message(\"text cannot be set empty\")
+
+
+func _on_color_color_selected(c: Color) -> void:
+	_color_changed.emit(c)
+"
+
+[node name="LabelBaseProperties" type="Control" groups=["labelbase_properties"]]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -672.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_io8fb")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 91.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "LabelBase"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_top = 61.0
+offset_right = 86.0
+offset_bottom = 111.0
+theme_override_constants/separation = 20
+
+[node name="Text" parent="VBoxContainer" instance=ExtResource("1_3icss")]
+layout_mode = 2
+text = "text:"
+property_name = "text"
+
+[node name="color" parent="VBoxContainer" instance=ExtResource("2_glfa5")]
+layout_mode = 2
+text = "color:"
+property_name = "color"
+
+[connection signal="delete" from="VBoxContainer/Text" to="." method="_on_line_edit_delete"]
+[connection signal="empty_filled" from="VBoxContainer/Text" to="." method="_on_line_edit_empty_filled"]
+[connection signal="filled" from="VBoxContainer/Text" to="." method="_on_line_edit_filled"]
+[connection signal="color_selected" from="VBoxContainer/color" to="." method="_on_color_color_selected"]
